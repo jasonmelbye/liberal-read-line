@@ -29,12 +29,8 @@
 		    collect c
 		    finally (if (null c) (setf reached-eof t)))))
       (let ((line (coerce chars 'string)))
-	(if reached-eof
-	    (if chars
-		(values line t)
-		(if eof-error-p
-		    (error 'end-of-file-reached)
-		    (values eof-value t)))
-	    (progn
-	      (consume-line-ending-chars stream)
-	      (values line nil)))))))
+	(consume-line-ending-chars stream)
+	(cond ((not reached-eof) (values line nil))
+	      (chars (values line t))
+	      (eof-error-p (error 'end-of-file-reached))
+	      (t (values eof-value t)))))))
